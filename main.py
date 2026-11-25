@@ -16,5 +16,14 @@ try:
     os.makedirs("/output", exist_ok=True)
     with open("/output/entry.txt", "w", encoding="utf-8") as f:
         f.write(LINE + "\n")
+    # Round-trip check: what landed on disk must be exactly the line
+    # plus its newline, otherwise the sealed scorer would read a
+    # different entry than stdout printed.
+    with open("/output/entry.txt", "r", encoding="utf-8") as f:
+        written = f.read()
+    if written != LINE + "\n":
+        raise SystemExit(
+            "entry.txt mismatch: expected the exact entry line, got %r" % written
+        )
 except OSError:
     pass
